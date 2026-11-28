@@ -1,5 +1,5 @@
-import { Link } from "~/lib/app/locale-router"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -13,6 +13,25 @@ type Props = {
   toHref: (page: number) => string
   className?: string
   labels?: { prev: string; next: string; nav: string }
+}
+
+/** 先頭・末尾と現在の前後 radius ページ（離れていれば省略記号） */
+export function buildPageItems(
+  current: number,
+  lastPage: number,
+  radius: number,
+): (number | "gap")[] {
+  const pages = new Set<number>([0, lastPage])
+  for (let page = current - radius; page <= current + radius; page++) {
+    if (page >= 0 && page <= lastPage) pages.add(page)
+  }
+  const sorted = Array.from(pages).sort((a, b) => a - b)
+  const items: (number | "gap")[] = []
+  for (const [index, page] of sorted.entries()) {
+    if (index > 0 && page - sorted[index - 1] > 1) items.push("gap")
+    items.push(page)
+  }
+  return items
 }
 
 /**
@@ -29,17 +48,9 @@ export function LinkPagination(props: Props) {
   }
 
   const current = Math.min(Math.max(props.currentPage, 0), lastPage)
-  const pages = new Set<number>([0, lastPage])
-  for (let page = current - 2; page <= current + 2; page++) {
-    if (page >= 0 && page <= lastPage) pages.add(page)
-  }
-  const sorted = Array.from(pages).sort((a, b) => a - b)
-
-  const items: (number | "gap")[] = []
-  for (const [index, page] of sorted.entries()) {
-    if (index > 0 && page - sorted[index - 1] > 1) items.push("gap")
-    items.push(page)
-  }
+  // PC は前後 2 ページ、スマホは幅が足りないので前後 1 ページだけ数字を出す
+  const wideItems = buildPageItems(current, lastPage, 2)
+  const narrowItems = buildPageItems(current, lastPage, 1)
 
   const labels = props.labels ?? {
     prev: "前へ",
@@ -49,74 +60,93 @@ export function LinkPagination(props: Props) {
 
   const itemClassName =
     "inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm tabular-nums transition-colors"
+  // 「前へ」「次へ」はスマホでも文字を出し、押しやすいよう大きくする（スマホは 1 行目に左右で並べ、数字は 2 行目）
+  const stepClassName = cn(
+    itemClassName,
+    "h-11 flex-1 gap-1 border font-medium sm:h-10 sm:flex-none sm:border-transparent",
+  )
+
+  const renderItems = (items: (number | "gap")[]) =>
+    items.map((item, index) =>
+      item === "gap" ? (
+        <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: 省略記号は位置で区別する
+          key={`gap-${index}`}
+          className="px-1 text-muted-foreground"
+        >
+          …
+        </span>
+      ) : item === current ? (
+        <span
+          key={item}
+          aria-current="page"
+          className={cn(
+            itemClassName,
+            "bg-foreground font-semibold text-background",
+          )}
+        >
+          {item + 1}
+        </span>
+      ) : (
+        <Link
+          key={item}
+          to={props.toHref(item)}
+          className={cn(itemClassName, "hover:bg-muted")}
+        >
+          {item + 1}
+        </Link>
+      ),
+    )
 
   return (
     <nav
       aria-label={labels.nav}
-      className={cn("flex flex-wrap items-center justify-center gap-1", props.className)}
+      className={cn(
+        "flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:gap-1",
+        props.className,
+      )}
     >
       {current > 0 ? (
         <Link
           to={props.toHref(current - 1)}
           rel="prev"
           aria-label={labels.prev}
-          className={cn(itemClassName, "gap-1 hover:bg-muted")}
+          className={cn(stepClassName, "hover:bg-muted")}
         >
           <ChevronLeftIcon className="size-4" />
-          <span className="hidden sm:inline">{labels.prev}</span>
+          <span>{labels.prev}</span>
         </Link>
       ) : (
         <span
-          className={cn(itemClassName, "gap-1 text-muted-foreground/50")}
+          className={cn(stepClassName, "text-muted-foreground/50")}
           aria-hidden
         >
           <ChevronLeftIcon className="size-4" />
-          <span className="hidden sm:inline">{labels.prev}</span>
+          <span>{labels.prev}</span>
         </span>
       )}
-      {items.map((item, index) =>
-        item === "gap" ? (
-          <span
-            // biome-ignore lint/suspicious/noArrayIndexKey: 省略記号は位置で区別する
-            key={`gap-${index}`}
-            className="px-1 text-muted-foreground"
-          >
-            …
-          </span>
-        ) : item === current ? (
-          <span
-            key={item}
-            aria-current="page"
-            className={cn(itemClassName, "bg-foreground font-semibold text-background")}
-          >
-            {item + 1}
-          </span>
-        ) : (
-          <Link
-            key={item}
-            to={props.toHref(item)}
-            className={cn(itemClassName, "hover:bg-muted")}
-          >
-            {item + 1}
-          </Link>
-        ),
-      )}
+      <div className="order-last flex w-full items-center justify-center gap-1 sm:hidden">
+        {renderItems(narrowItems)}
+      </div>
+      <div className="hidden items-center gap-1 sm:flex">
+        {renderItems(wideItems)}
+      </div>
       {current < lastPage ? (
         <Link
           to={props.toHref(current + 1)}
           rel="next"
           aria-label={labels.next}
-          className={cn(itemClassName, "gap-1 hover:bg-muted")}
+          className={cn(stepClassName, "hover:bg-muted")}
         >
-          <span className="hidden sm:inline">{labels.next}</span>
+          <span>{labels.next}</span>
           <ChevronRightIcon className="size-4" />
         </Link>
       ) : (
         <span
-          className={cn(itemClassName, "gap-1 text-muted-foreground/50")}
+          className={cn(stepClassName, "text-muted-foreground/50")}
           aria-hidden
         >
-          <span className="hidden sm:inline">{labels.next}</span>
+          <span>{labels.next}</span>
           <ChevronRightIcon className="size-4" />
         </span>
       )}

@@ -265,6 +265,13 @@ function HomeHeader(props: Props) {
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
 
+  // 検索ページ（/search・/r/search）はページの中に検索欄があるので、ヘッダーの検索欄を出さない
+  // （スマホで検索欄が 2 つ並び、どちらを使えばよいか迷っていた）
+  const isOnSearchPage = isSearchPathname(location.pathname)
+  useEffect(() => {
+    if (isOnSearchPage) setIsSearchFormOpen(false)
+  }, [isOnSearchPage])
+
   // 開いたままの画面でも未読の数が増えるようにする
   // - プッシュが届いたら（このタブ: onMessage、ほかのタブ: サービスワーカーからの知らせ）すぐ取り直す
   // - 見えている間は数分おきに取り直す（隠れているタブでは取らない）
@@ -564,7 +571,12 @@ function HomeHeader(props: Props) {
       <div className="flex min-w-0 flex-1 items-center justify-end gap-1 md:gap-2">
         {/* 検索バーは YouTube のように空いている幅の真ん中に置く */}
         <div className="hidden min-w-0 flex-1 items-center justify-center px-2 md:flex lg:px-6">
-          <div className="flex w-full min-w-0 max-w-[640px] items-center">
+          <div
+            className={cn(
+              "flex w-full min-w-0 max-w-[640px] items-center",
+              isOnSearchPage && "hidden",
+            )}
+          >
             <div className="relative flex w-full min-w-0 flex-col">
               <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3.5 size-4 text-muted-foreground" />
               <Input
@@ -596,7 +608,7 @@ function HomeHeader(props: Props) {
             </div>
           </div>
         </div>
-        {isSearchFormOpen ? (
+        {isSearchFormOpen && !isOnSearchPage ? (
           <div className="flex w-full space-x-2 md:hidden">
             <Button
               className="block md:hidden"
@@ -661,7 +673,10 @@ function HomeHeader(props: Props) {
             <div className="flex shrink-0 items-center gap-1 md:hidden">
               <HomeHeaderContentToggle />
               <Button
-                className="size-10 rounded-full"
+                className={cn(
+                  "size-10 rounded-full",
+                  isOnSearchPage && "hidden",
+                )}
                 onClick={onToggleSearchForm}
                 variant="ghost"
                 size="icon"

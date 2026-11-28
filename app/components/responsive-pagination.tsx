@@ -1,3 +1,4 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -85,6 +86,7 @@ export function ResponsivePagination({
   showPageJump = false,
 }: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   // 100ページ制限を適用する場合の最大アイテム数
   const maxItemsFor100Pages = perPage * 100
@@ -127,7 +129,7 @@ export function ResponsivePagination({
   // ページ番号の欄を足すと狭い画面で収まらないので折り返す
   const contentClassName = showPageJump
     ? "flex flex-wrap items-center justify-center gap-2"
-    : "flex items-center space-x-2"
+    : "flex flex-wrap items-center justify-center gap-1.5 sm:gap-2"
 
   const firstPageIndex = 0
   const lastPageIndex = pageCount - 1
@@ -155,8 +157,10 @@ export function ResponsivePagination({
               variant="secondary"
               onClick={() => handlePageChange(currentPageIndex - 1)}
               disabled={!showPrev}
+              className="gap-1 px-3"
             >
-              Prev
+              <ChevronLeftIcon className="size-4" />
+              {t("前へ", "Prev")}
             </Button>
           </PaginationItem>
           {allPages.map((p) => (
@@ -179,8 +183,10 @@ export function ResponsivePagination({
               variant="secondary"
               onClick={() => handlePageChange(currentPageIndex + 1)}
               disabled={!showNext}
+              className="gap-1 px-3"
             >
-              Next
+              {t("次へ", "Next")}
+              <ChevronRightIcon className="size-4" />
             </Button>
           </PaginationItem>
           {showPageJump && (
@@ -230,8 +236,10 @@ export function ResponsivePagination({
             variant="secondary"
             onClick={() => handlePageChange(currentPageIndex - 1)}
             disabled={!showPrev}
+            className="gap-1 px-3"
           >
-            Prev
+            <ChevronLeftIcon className="size-4" />
+            {t("前へ", "Prev")}
           </Button>
         </PaginationItem>
 
@@ -298,8 +306,10 @@ export function ResponsivePagination({
             variant="secondary"
             onClick={() => handlePageChange(currentPageIndex + 1)}
             disabled={!showNext}
+            className="gap-1 px-3"
           >
-            Next
+            {t("次へ", "Next")}
+            <ChevronRightIcon className="size-4" />
           </Button>
         </PaginationItem>
         {showPageJump && (

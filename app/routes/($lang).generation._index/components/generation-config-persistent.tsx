@@ -1,5 +1,6 @@
 import { useLayoutEffect } from "react"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { persistGenerationSnapshot } from "~/routes/($lang).generation._index/utils/persist-generation-snapshot"
 
 type Props = {
   children: React.ReactNode
@@ -13,7 +14,8 @@ export function GenerationConfigPersistent(props: Props) {
   useLayoutEffect(() => {
     const persist = () => {
       const snapshot = actor.getPersistedSnapshot()
-      localStorage.setItem("generation.state", JSON.stringify(snapshot))
+      // 容量超え（QuotaExceededError）で例外を投げると生成画面が止まるため、保存できなくても続ける
+      persistGenerationSnapshot(localStorage, snapshot)
     }
     const subscription = actor.subscribe(persist)
     return () => {

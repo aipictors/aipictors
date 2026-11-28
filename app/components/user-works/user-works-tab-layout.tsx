@@ -1,7 +1,7 @@
-import { Link } from "~/lib/app/locale-router"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { GridLayoutToggle } from "~/components/grid-layout-toggle"
+import { LinkPagination } from "~/components/link-pagination"
 import { useTranslation } from "~/hooks/use-translation"
+import { Link } from "~/lib/app/locale-router"
 import { cn } from "~/lib/utils"
 
 export type UserWorksSort = "new" | "popular"
@@ -105,7 +105,7 @@ export function UserWorksTabLayout(props: Props) {
       )}
 
       {lastPage > 0 && (
-        <LinkPagination
+        <UserWorksPagination
           basePath={props.basePath}
           page={props.page}
           lastPage={lastPage}
@@ -116,79 +116,26 @@ export function UserWorksTabLayout(props: Props) {
   )
 }
 
-function LinkPagination(props: {
+/** 作品タブのページ送り（共通のリンクのページ送り。スマホでも「前へ」「次へ」を出す） */
+function UserWorksPagination(props: {
   basePath: string
   page: number
   lastPage: number
   sort: UserWorksSort
 }) {
   const t = useTranslation()
-  const { page, lastPage } = props
-  const pages = [...new Set([0, page - 1, page, page + 1, lastPage])]
-    .filter((value) => value >= 0 && value <= lastPage)
-    .sort((a, b) => a - b)
-
-  const itemClass =
-    "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-3 text-sm transition-colors"
-
   return (
-    <nav
-      aria-label={t("ページ送り", "Pagination")}
-      className="flex justify-center pt-4"
-    >
-      <ul className="flex items-center gap-1">
-        <li>
-          {page > 0 ? (
-            <Link
-              to={toHref(props.basePath, page - 1, props.sort)}
-              rel="prev"
-              className={cn(itemClass, "hover:bg-muted")}
-              aria-label={t("前のページ", "Previous page")}
-            >
-              <ChevronLeftIcon className="size-4" />
-            </Link>
-          ) : (
-            <span className={cn(itemClass, "opacity-30")}>
-              <ChevronLeftIcon className="size-4" />
-            </span>
-          )}
-        </li>
-        {pages.map((value, index) => (
-          <li key={value} className="flex items-center gap-1">
-            {index > 0 && value - pages[index - 1] > 1 && (
-              <span className="px-1 text-muted-foreground">…</span>
-            )}
-            <Link
-              to={toHref(props.basePath, value, props.sort)}
-              aria-current={value === page ? "page" : undefined}
-              className={cn(
-                itemClass,
-                value === page
-                  ? "bg-foreground font-medium text-background"
-                  : "hover:bg-muted",
-              )}
-            >
-              {value + 1}
-            </Link>
-          </li>
-        ))}
-        <li>
-          {page < lastPage ? (
-            <Link
-              to={toHref(props.basePath, page + 1, props.sort)}
-              rel="next"
-              className={cn(itemClass, "hover:bg-muted")}
-              aria-label={t("次のページ", "Next page")}
-            >
-              <ChevronRightIcon className="size-4" />
-            </Link>
-          ) : (
-            <span className={cn(itemClass, "opacity-30")}>
-              <ChevronRightIcon className="size-4" />
-            </span>
-          )}
-        </li>
-      </ul>
-    </nav>
+    <LinkPagination
+      className="pt-4"
+      currentPage={props.page}
+      totalCount={props.lastPage + 1}
+      perPage={1}
+      toHref={(page) => toHref(props.basePath, page, props.sort)}
+      labels={{
+        prev: t("前へ", "Prev"),
+        next: t("次へ", "Next"),
+        nav: t("ページ送り", "Pagination"),
+      }}
+    />
   )
 }

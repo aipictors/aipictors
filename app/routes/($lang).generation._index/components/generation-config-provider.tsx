@@ -5,6 +5,11 @@ import { GenerationConfigContext } from "~/routes/($lang).generation._index/cont
 import { generationConfigMachine } from "~/routes/($lang).generation._index/machines/generation-config-machine"
 import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
+import {
+  GENERATION_STATE_STORAGE_KEY,
+  MAX_GENERATION_STATE_LENGTH,
+  persistGenerationSnapshot,
+} from "~/routes/($lang).generation._index/utils/persist-generation-snapshot"
 import { restoreGenerationSnapshot } from "~/routes/($lang).generation._index/utils/restore-generation-snapshot"
 
 /**
@@ -12,10 +17,27 @@ import { restoreGenerationSnapshot } from "~/routes/($lang).generation._index/ut
  */
 function readPersistedSnapshot() {
   if (typeof document === "undefined") return undefined
-  return restoreGenerationSnapshot(
-    localStorage.getItem("generation.state"),
+  let stateText: string | null = null
+  try {
+    stateText = localStorage.getItem(GENERATION_STATE_STORAGE_KEY)
+  } catch (_error) {
+    return undefined
+  }
+  const snapshot = restoreGenerationSnapshot(
+    stateText,
     Object.keys(generationConfigMachine.config.states ?? {}),
   )
+  // 大きすぎる保存データは小さくして書き直し、ほかの保存に使える容量を空ける
+  if (stateText !== null && stateText.length > MAX_GENERATION_STATE_LENGTH) {
+    if (snapshot === undefined) {
+      try {
+        localStorage.removeItem(GENERATION_STATE_STORAGE_KEY)
+      } catch (_error) {}
+    } else {
+      persistGenerationSnapshot(localStorage, snapshot)
+    }
+  }
+  return snapshot
 }
 
 type Props = {

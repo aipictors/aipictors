@@ -441,6 +441,8 @@ export default function NewImage() {
 
   // ユーザーが実際に作品投稿に関する入力をしているかチェックする関数
   const hasUserInput = useCallback(() => {
+    // 投稿が終わったあとは作品ページへ移るときに「変更が消えます」を出さない
+    if (state.uploadedWorkId !== null) return false
     return (
       state.thumbnailBase64 !== null ||
       inputState.title.trim() !== "" ||
@@ -455,6 +457,7 @@ export default function NewImage() {
       inputState.reservationTime !== null
     )
   }, [
+    state.uploadedWorkId,
     state.thumbnailBase64,
     state.items.length,
     state.videoFile,

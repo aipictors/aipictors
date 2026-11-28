@@ -4,7 +4,7 @@ import {
   PlusIcon,
   ShieldCheckIcon,
 } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -14,7 +14,6 @@ import {
 } from "~/components/ui/dialog"
 import { WorkAutoModerationPostNotice } from "~/components/work/work-auto-moderation"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "~/lib/app/locale-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
 import { PostNextSteps } from "~/routes/($lang)._main.new.image/components/post-next-steps"
@@ -42,6 +41,9 @@ type Props = {
 
 export function SuccessCreatedWorkDialog(props: Props) {
   const t = useTranslation()
+
+  /** 作品ページへ移る途中（押したらすぐ閉じて、反応が無いように見せない） */
+  const [isLeaving, setIsLeaving] = useState(false)
 
   const getRandomColor = () => {
     const colors = ["#ff0", "#ff8c00", "#e6e6fa", "#00f", "#8a2be2", "#ff69b4"]
@@ -127,6 +129,13 @@ export function SuccessCreatedWorkDialog(props: Props) {
     return `/posts/${props.workId}`
   }
 
+  // ダイアログを閉じて作品ページへ移る（サムネイルと「作品を見る」で同じ動き）
+  const openWork = () => {
+    if (typeof document === "undefined") return
+    setIsLeaving(true)
+    window.location.href = link()
+  }
+
   // 予約投稿かどうか
   const isReserved = () => {
     const reservedDate = new Date(props.createdAt * 1000 + 3600000 * 9)
@@ -144,13 +153,10 @@ export function SuccessCreatedWorkDialog(props: Props) {
       <Dialog
         onOpenChange={(isOpen) => {
           if (!isOpen) {
-            // ページ遷移
-            if (typeof document !== "undefined") {
-              window.location.href = link()
-            }
+            openWork()
           }
         }}
-        open={props.isOpen}
+        open={props.isOpen && !isLeaving}
       >
         <DialogContent className="max-h-[90dvh] gap-4 overflow-y-auto rounded-2xl">
           <div className="-mx-6 -mt-6 relative overflow-hidden rounded-t-2xl bg-gradient-to-b from-sky-500/15 to-transparent px-6 pt-8 pb-2">
@@ -159,17 +165,34 @@ export function SuccessCreatedWorkDialog(props: Props) {
               className="pointer-events-none absolute inset-0 overflow-hidden"
             />
             <div className="relative mx-auto w-fit">
-              {props.imageBase64 ? (
-                <Link to={link()}>
+              <a
+                href={link()}
+                aria-label={t("作品を見る", "View work")}
+                className="block rounded-2xl"
+                onClick={(event) => {
+                  // 新しいタブで開く操作はブラウザに任せる
+                  if (
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.button !== 0
+                  ) {
+                    return
+                  }
+                  event.preventDefault()
+                  openWork()
+                }}
+              >
+                {props.imageBase64 ? (
                   <img
                     className="size-32 rounded-2xl object-cover shadow-lg ring-4 ring-background transition-opacity hover:opacity-90"
                     src={props.imageBase64}
                     alt=""
                   />
-                </Link>
-              ) : (
-                <div className="size-32 rounded-2xl bg-muted" />
-              )}
+                ) : (
+                  <div className="size-32 rounded-2xl bg-muted" />
+                )}
+              </a>
               <span className="-right-2 -bottom-2 absolute flex size-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ring-4 ring-background">
                 <CheckIcon className="size-5" strokeWidth={3} />
               </span>
@@ -229,14 +252,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
                 {t("続けて投稿", "Post another")}
               </Button>
             )}
-            <Button
-              className="h-11 rounded-xl font-bold"
-              onClick={() => {
-                if (typeof document !== "undefined") {
-                  window.location.href = link()
-                }
-              }}
-            >
+            <Button className="h-11 rounded-xl font-bold" onClick={openWork}>
               <ExternalLinkIcon className="mr-1.5 size-4" />
               {t("作品を見る", "View work")}
             </Button>
