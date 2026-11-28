@@ -108,8 +108,27 @@ export type SafetensorsInfo = {
   title: string | null
 }
 
+const MOSS_MARKER_KEYS = [
+  "video_embedder.weight",
+  "final_linear_video.weight",
+  "shared_block_modulation",
+]
+
+/**
+ * キーの名前から MOSS Image の拡散モデルか判定する（API の判定と同じ）
+ */
+export const isMossCheckpointKeys = (keys: string[]) => {
+  const stripped = keys.map((key) =>
+    key.replace(/^(model\.)?diffusion_model\./, ""),
+  )
+  return MOSS_MARKER_KEYS.every((marker) =>
+    stripped.some((key) => key === marker || key.startsWith(`${marker}.`)),
+  )
+}
+
 const toBaseModel = (text: string): UserModelBaseModel | null => {
   const value = text.toLowerCase()
+  if (value.includes("moss")) return "MOSS"
   if (value.includes("pony")) return "PONY"
   if (value.includes("illustrious")) return "ILLUSTRIOUS"
   if (value.includes("noob")) return "NOOBAI"
@@ -143,13 +162,17 @@ export const parseSafetensorsHeader = (
         key.includes("lokr_w1"),
     ) || typeof metadata.ss_network_module === "string"
 
+  // MOSS Image の派生は拡散モデルだけのファイル（ComfyUI 向けの書き出しはキーに接頭辞がない）
+  const isMoss = !isLora && isMossCheckpointKeys(keys)
+
   const isCheckpoint =
     !isLora &&
-    keys.some(
-      (key) =>
-        key.startsWith("model.diffusion_model.") ||
-        key.startsWith("first_stage_model."),
-    )
+    (isMoss ||
+      keys.some(
+        (key) =>
+          key.startsWith("model.diffusion_model.") ||
+          key.startsWith("first_stage_model."),
+      ))
 
   const kind: UserModelKind | null = isLora
     ? "LORA"
@@ -158,6 +181,7 @@ export const parseSafetensorsHeader = (
       : null
 
   const baseModel = (() => {
+    if (isMoss) return "MOSS" as const
     const candidates = [
       metadata["modelspec.architecture"],
       metadata.ss_base_model_version,

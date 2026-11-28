@@ -34,9 +34,19 @@ export const officialLoraFamily = (name: string): LoraFamily => {
 export const userModelLoraFamily = (
   baseModel: UserModelBaseModel | null | undefined,
 ): LoraFamily | null => {
-  if (!baseModel || baseModel === "OTHER") return null
+  if (!baseModel || baseModel === "OTHER" || baseModel === "MOSS") return null
   if (baseModel === "SD1.5") return "SD1"
   return "SDXL"
+}
+
+/**
+ * みんなのモデルのチェックポイントの系統。MOSS Image（DiT）は LoRA を使えない
+ */
+export const userCheckpointLoraFamily = (
+  baseModel: UserModelBaseModel | null | undefined,
+): CheckpointLoraFamily | null => {
+  if (baseModel === "MOSS") return "NONE"
+  return userModelLoraFamily(baseModel)
 }
 
 /**

@@ -13,6 +13,7 @@ import {
   type CheckpointLoraFamily,
   isLoraUsableWith,
   officialLoraFamily,
+  userCheckpointLoraFamily,
   userModelLoraFamily,
 } from "~/lib/user-models/lora-compat"
 import type { UserModel, UserModelKind } from "~/lib/user-models/types"
@@ -148,7 +149,7 @@ export function GenerationModelLibraryProvider(props: Props) {
   const selectUserCheckpoint = (model: UserModel) => {
     switchWithLoraCheck({
       modelName: model.name,
-      family: userModelLoraFamily(model.baseModel),
+      family: userCheckpointLoraFamily(model.baseModel),
       apply: () => userModelSelection.selectCheckpoint(model),
     })
   }

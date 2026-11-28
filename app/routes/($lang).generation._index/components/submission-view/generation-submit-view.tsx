@@ -51,6 +51,7 @@ import {
   logInfo,
   logWarn,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import { toDitCheckModelName } from "~/routes/($lang).generation._index/utils/dit-models"
 import { findGenerationSubmitBlock } from "~/routes/($lang).generation._index/utils/find-generation-submit-block"
 import { publishGenerationCoinSummary } from "~/routes/($lang).generation._index/utils/generation-coin-store"
 import { openGenerationPlanUpgrade } from "~/routes/($lang).generation._index/utils/generation-plan-upgrade-store"
@@ -381,9 +382,12 @@ export function GenerationSubmissionView(props: Props) {
       generationType,
       inProgressImageGenerationTasksCount,
       maxTasksCount,
-      modelName: context.imageModels.find(
-        (model) => model.id === context.config.modelId,
-      )?.name,
+      modelName: toDitCheckModelName({
+        officialModelName: context.imageModels.find(
+          (model) => model.id === context.config.modelId,
+        )?.name,
+        userCheckpointBaseModel: userModelSelection.checkpoint?.baseModel,
+      }),
     })
 
     if (submitBlock !== null) {

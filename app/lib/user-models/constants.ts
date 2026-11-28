@@ -14,6 +14,8 @@ export const USER_MODEL_BASE_MODELS: {
   { value: "NOOBAI", label: "NoobAI" },
   { value: "PONY", label: "Pony" },
   { value: "SD1.5", label: "SD 1.5" },
+  // チェックポイントだけ（LoRA は生成で使えない）
+  { value: "MOSS", label: "MOSS Image" },
   { value: "OTHER", label: "その他" },
 ]
 
@@ -30,7 +32,8 @@ export const USER_MODEL_KINDS: {
   {
     value: "CHECKPOINT",
     label: "Checkpoint",
-    description: "絵柄のベースになるモデル本体（最大 7.5GB）",
+    description:
+      "絵柄のベースになるモデル本体（最大 7.5GB、サブスクなら 10GB）",
   },
 ]
 
@@ -45,12 +48,38 @@ export const USER_MODEL_RATINGS: {
 ]
 
 /**
- * 種類ごとのサイズ上限（バイト）
+ * 種類ごとのサイズ上限（バイト。無料プラン）
  */
 export const USER_MODEL_MAX_BYTES: Record<UserModelKind, number> = {
   LORA: 400 * 1024 * 1024,
   CHECKPOINT: 7.5 * 1024 * 1024 * 1024,
 }
+
+/**
+ * サブスク（LITE / STANDARD / PREMIUM）の人のチェックポイントの上限（バイト）。
+ * MOSS Image の派生の bf16 は 9.5GB 前後ある（API の defaultSubscriberCheckpointMaxBytes と同じ）
+ */
+export const USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES =
+  10 * 1024 * 1024 * 1024
+
+/**
+ * プランごとの 1 ファイルの上限（バイト）。プランが分からないときは無料プランの上限
+ */
+export const userModelMaxBytes = (
+  kind: UserModelKind,
+  planType?: string | null,
+): number =>
+  kind === "CHECKPOINT" && planType && planType !== "FREE"
+    ? USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES
+    : USER_MODEL_MAX_BYTES[kind]
+
+/**
+ * ベースモデルの候補（MOSS Image はチェックポイントだけ）
+ */
+export const userModelBaseModelsFor = (kind: UserModelKind) =>
+  USER_MODEL_BASE_MODELS.filter(
+    (item) => kind === "CHECKPOINT" || item.value !== "MOSS",
+  )
 
 /**
  * 1 パートのサイズ（API が partSize を返したらそちらを優先）

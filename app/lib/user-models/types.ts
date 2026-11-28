@@ -6,6 +6,7 @@ export type UserModelBaseModel =
   | "PONY"
   | "ILLUSTRIOUS"
   | "NOOBAI"
+  | "MOSS"
   | "OTHER"
 
 export type UserModelRating = "G" | "R15" | "R18" | "R18G"

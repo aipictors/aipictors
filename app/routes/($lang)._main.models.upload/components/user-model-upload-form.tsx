@@ -18,12 +18,12 @@ import {
   useMyUserModels,
   userModelsQueryKeys,
 } from "~/components/user-models/use-user-models"
+import {
+  isAuthorshipComplete,
+  UserModelAuthorshipFields,
+} from "~/components/user-models/user-model-authorship-fields"
 import { UserModelLimitCard } from "~/components/user-models/user-model-limit-card"
 import { UserModelLimitUpgradeDialog } from "~/components/user-models/user-model-limit-upgrade-dialog"
-import {
-  UserModelAuthorshipFields,
-  isAuthorshipComplete,
-} from "~/components/user-models/user-model-authorship-fields"
 import { UserModelMetadataFields } from "~/components/user-models/user-model-metadata-fields"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "~/lib/app/locale-router"
@@ -38,8 +38,9 @@ import {
 import {
   kindLabel,
   USER_MODEL_KINDS,
-  USER_MODEL_MAX_BYTES,
   USER_MODEL_PART_SIZE,
+  USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES,
+  userModelMaxBytes,
 } from "~/lib/user-models/constants"
 import { formatBytes, formatDuration } from "~/lib/user-models/generation"
 import {
@@ -161,7 +162,8 @@ export function UserModelUploadForm() {
     }
   }, [])
 
-  const maxBytes = USER_MODEL_MAX_BYTES[kind]
+  const planType = mine.data?.planType
+  const maxBytes = userModelMaxBytes(kind, planType)
   const isTooLarge = file !== null && file.size > maxBytes
 
   const onSelectFile = async (selected: File | null) => {
@@ -208,7 +210,7 @@ export function UserModelUploadForm() {
         (nextKind === "LORA" ? info.triggerWords.join(", ") : ""),
     }))
 
-    if (selected.size > USER_MODEL_MAX_BYTES[nextKind]) {
+    if (selected.size > userModelMaxBytes(nextKind, planType)) {
       setHash({ type: "none" })
       return
     }
@@ -599,6 +601,9 @@ export function UserModelUploadForm() {
                     <span className="ml-2 text-destructive">
                       {kindLabel(kind)} の上限 {formatBytes(maxBytes)}{" "}
                       を超えています
+                      {kind === "CHECKPOINT" &&
+                        maxBytes < USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES &&
+                        `（サブスクなら ${formatBytes(USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES)} まで）`}
                     </span>
                   )}
                 </p>

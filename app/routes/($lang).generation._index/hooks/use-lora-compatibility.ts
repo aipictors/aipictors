@@ -13,6 +13,7 @@ import {
   loraFamilyLabel,
   officialCheckpointLoraFamily,
   officialLoraFamily,
+  userCheckpointLoraFamily,
   userModelLoraFamily,
 } from "~/lib/user-models/lora-compat"
 import type { UserModelBaseModel } from "~/lib/user-models/types"
@@ -128,7 +129,7 @@ export function useLoraCompatibility() {
   const checkpoint = userModelSelection.checkpoint
 
   const checkpointFamily: CheckpointLoraFamily | null = checkpoint
-    ? userModelLoraFamily(checkpoint.baseModel)
+    ? userCheckpointLoraFamily(checkpoint.baseModel)
     : officialModel
       ? imageModelLoraFamily(officialModel)
       : null

@@ -7,6 +7,7 @@ import {
   type LoraFamily,
   loraFamilyLabel,
   officialLoraFamily,
+  userCheckpointLoraFamily,
   userModelLoraFamily,
 } from "~/lib/user-models/lora-compat"
 import type { UserModelBaseModel } from "~/lib/user-models/types"
@@ -48,7 +49,7 @@ export function GenerationUserModelFromUrl() {
       (item) => item.id === context.config.modelId,
     )
     const currentFamily = selection.checkpoint
-      ? userModelLoraFamily(selection.checkpoint.baseModel)
+      ? userCheckpointLoraFamily(selection.checkpoint.baseModel)
       : current
         ? imageModelLoraFamily(current)
         : null

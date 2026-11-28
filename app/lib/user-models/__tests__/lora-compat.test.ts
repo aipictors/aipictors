@@ -3,6 +3,7 @@ import {
   isLoraUsableWith,
   officialCheckpointLoraFamily,
   officialLoraFamily,
+  userCheckpointLoraFamily,
   userModelLoraFamily,
 } from "~/lib/user-models/lora-compat"
 
@@ -45,5 +46,20 @@ describe("lora-compat", () => {
     expect(isLoraUsableWith("SDXL", "NONE")).toBe(false)
     expect(isLoraUsableWith(null, "SDXL")).toBeNull()
     expect(isLoraUsableWith("SDXL", null)).toBeNull()
+  })
+})
+
+describe("MOSS Image のみんなのモデル", () => {
+  test("チェックポイントは LoRA を使えない（NONE）", () => {
+    expect(userCheckpointLoraFamily("MOSS")).toBe("NONE")
+    expect(userCheckpointLoraFamily("ILLUSTRIOUS")).toBe("SDXL")
+    expect(userCheckpointLoraFamily("SD1.5")).toBe("SD1")
+    expect(userCheckpointLoraFamily("OTHER")).toBe(null)
+    expect(isLoraUsableWith("SDXL", userCheckpointLoraFamily("MOSS"))).toBe(
+      false,
+    )
+  })
+  test("LoRA の系統としては扱わない", () => {
+    expect(userModelLoraFamily("MOSS")).toBe(null)
   })
 })

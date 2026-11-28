@@ -1,4 +1,3 @@
-import { Link } from "~/lib/app/locale-router"
 import { useQueryClient } from "@tanstack/react-query"
 import { FileBoxIcon, Loader2Icon, WandSparklesIcon } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -21,13 +20,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { userModelsQueryKeys } from "~/components/user-models/use-user-models"
+import {
+  useMyUserModels,
+  userModelsQueryKeys,
+} from "~/components/user-models/use-user-models"
+import { Link } from "~/lib/app/locale-router"
 import {
   kindLabel,
-  USER_MODEL_BASE_MODELS,
   USER_MODEL_KINDS,
-  USER_MODEL_MAX_BYTES,
   USER_MODEL_RATINGS,
+  USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES,
+  userModelBaseModelsFor,
+  userModelMaxBytes,
 } from "~/lib/user-models/constants"
 import { formatBytes } from "~/lib/user-models/generation"
 import type {
@@ -108,7 +112,9 @@ export function ModelLibraryUploadDialog(props: Props) {
   }, [props.file])
 
   const file = props.file
-  const maxBytes = USER_MODEL_MAX_BYTES[draft.kind]
+  const mine = useMyUserModels()
+  const planType = mine.data?.planType
+  const maxBytes = userModelMaxBytes(draft.kind, planType)
   const isTooLarge = file !== null && file.size > maxBytes
   const isUnreadable = info === null
   const isLoading = info === "loading"
@@ -202,7 +208,15 @@ export function ModelLibraryUploadDialog(props: Props) {
                     key={kind.value}
                     type="button"
                     onClick={() =>
-                      setDraft((current) => ({ ...current, kind: kind.value }))
+                      setDraft((current) => ({
+                        ...current,
+                        kind: kind.value,
+                        // MOSS Image の LoRA は使えないので、LoRA に切り替えたらベースモデルを戻す
+                        baseModel:
+                          kind.value === "LORA" && current.baseModel === "MOSS"
+                            ? "OTHER"
+                            : current.baseModel,
+                      }))
                     }
                     className={cn(
                       "rounded-md px-3 py-1.5 font-medium text-sm transition-colors",
@@ -218,6 +232,9 @@ export function ModelLibraryUploadDialog(props: Props) {
               {isTooLarge && (
                 <p className="text-destructive text-xs">
                   {kindLabel(draft.kind)} は {formatBytes(maxBytes)} までです
+                  {draft.kind === "CHECKPOINT" &&
+                    maxBytes < USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES &&
+                    `（サブスクなら ${formatBytes(USER_MODEL_SUBSCRIBER_CHECKPOINT_MAX_BYTES)} まで）`}
                 </p>
               )}
             </div>
@@ -253,7 +270,7 @@ export function ModelLibraryUploadDialog(props: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {USER_MODEL_BASE_MODELS.map((base) => (
+                    {userModelBaseModelsFor(draft.kind).map((base) => (
                       <SelectItem key={base.value} value={base.value}>
                         {base.label}
                       </SelectItem>

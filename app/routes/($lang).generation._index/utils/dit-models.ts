@@ -24,3 +24,15 @@ export const findDitModelLabel = (
     .replace(/\.(safetensors|ckpt)$/i, "")
   return DIT_MODELS.find((model) => model.pattern.test(name))?.label ?? null
 }
+
+/**
+ * DiT かどうかの判定に使うモデル名。みんなのモデルの MOSS Image（user/<id>.safetensors）は
+ * 公式の MOSS Image と同じ扱いにする（ControlNet・SD 用 LoRA は使えない）
+ */
+export const toDitCheckModelName = (props: {
+  officialModelName: string | null | undefined
+  userCheckpointBaseModel?: string | null
+}): string | null | undefined =>
+  props.userCheckpointBaseModel === "MOSS"
+    ? "moss_image"
+    : props.officialModelName

@@ -9,12 +9,15 @@ import {
   configChipClass,
 } from "~/routes/($lang).generation._index/components/config-view/generation-config-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { useUserModelSelection } from "~/routes/($lang).generation._index/hooks/use-user-model-selection"
 import { findControlNetUnsupportedLabel } from "~/routes/($lang).generation._index/utils/controlnet-support"
+import { toDitCheckModelName } from "~/routes/($lang).generation._index/utils/dit-models"
 
 type ReferenceImageMode = "none" | "i2i" | "controlnet"
 
 export function GenerationConfigReferenceImage() {
   const context = useGenerationContext()
+  const userModelSelection = useUserModelSelection()
   const t = useTranslation()
 
   const hasI2iImage = context.config.i2iImageBase64 !== ""
@@ -25,9 +28,12 @@ export function GenerationConfigReferenceImage() {
   /** ControlNet を使えないモデル（SD2・Z-Image など）のときは、その名前 */
   const controlNetUnsupportedLabel = findControlNetUnsupportedLabel({
     modelType: context.config.modelType,
-    modelName: context.imageModels.find(
-      (model) => model.id === context.config.modelId,
-    )?.name,
+    modelName: toDitCheckModelName({
+      officialModelName: context.imageModels.find(
+        (model) => model.id === context.config.modelId,
+      )?.name,
+      userCheckpointBaseModel: userModelSelection.checkpoint?.baseModel,
+    }),
   })
 
   const defaultMode: ReferenceImageMode = useMemo(() => {

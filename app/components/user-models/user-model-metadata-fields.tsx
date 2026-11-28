@@ -15,8 +15,8 @@ import { Textarea } from "~/components/ui/textarea"
 import { useModelImageUploader } from "~/components/user-models/use-image-uploader"
 import { UserModelRecommendedSettingsFields } from "~/components/user-models/user-model-recommended-settings-fields"
 import {
-  USER_MODEL_BASE_MODELS,
   USER_MODEL_RATINGS,
+  userModelBaseModelsFor,
 } from "~/lib/user-models/constants"
 import type {
   UserModelBaseModel,
@@ -185,7 +185,8 @@ export function UserModelMetadataFields(props: Props) {
           サムネイル・サンプル画像
         </FieldLabel>
         <p className="text-muted-foreground text-xs">
-          サムネイルは必須です。選ばなかった場合は Civitai の作例から自動で設定し、見つからないときは登録の前に選んでもらいます。
+          サムネイルは必須です。選ばなかった場合は Civitai
+          の作例から自動で設定し、見つからないときは登録の前に選んでもらいます。
           このモデルで生成した画像を載せると、使ってもらいやすくなります。★
           を押した画像がサムネイルになります。
         </p>
@@ -321,7 +322,7 @@ export function UserModelMetadataFields(props: Props) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {USER_MODEL_BASE_MODELS.map((item) => (
+              {userModelBaseModelsFor(props.kind).map((item) => (
                 <SelectItem key={item.value} value={item.value}>
                   {item.label}
                 </SelectItem>
